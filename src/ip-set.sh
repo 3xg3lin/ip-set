@@ -45,7 +45,7 @@ case "${1,,}" in
 						selected="$i"
 						echo "Selected interface is $selected"
 						read -p "Enter ip address (xx.xx.xx.xx/xx)" ip
-						ip address $ip dev $selected
+						ip addr add $ip dev $selected
 						read -p "Please enter your gateway address (xx.xx.xx.xx/xx)" route
 						ip route add default via $route dev $selected
 						echo "It's all done"
@@ -54,7 +54,7 @@ case "${1,,}" in
 		done ;;
 	("--set"|"-set")
 		read -p "Enter ip address (xx.xx.xx.xx/xx)" ip
-		ip address $ip dev $INTERFACE
+		ip addr add $ip dev $INTERFACE
 		read -p "Please enter your gateway address (xx.xx.xx.xx/xx)" route
 		ip route add default via $route dev $INTERFACE
 		echo "It's all done" ;;
