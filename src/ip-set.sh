@@ -13,6 +13,12 @@ if ! command -v "awk" &> /dev/null ; then
 	export _tmp_var="false"
 fi
 
+if ! $(command -v "sed" &> /dev/null)
+then
+    echo "There is no \"sed\" command found!"
+    export _tmp_var="false"
+fi
+
 if [[ "${_tmp_var}" == "false" ]] ; then
 	exit 1
 fi
@@ -25,38 +31,40 @@ source "${PREFIX}/ip-set.conf"
 
 case "${1,,}" in
 	("--list"|"-l")
-		ip "a" | awk '$2 ~ /[^:]+:$/{print $2}'
-	;;
+		ip "a" | awk '$2 ~ /[^:]+:$/{print $2}'| sed 's/://g' ;;
 	("--interface"|"-i")
-		echo "${INTERFACE}"
-	;;
+		echo "${INTERFACE}" ;;
 	("--autoselect"|"-a")
-		for i in $(ip "a" | awk '$2 ~ /[^:]+:$/{print $2}') ; do
-			echo "${i}"
-		done
-	;;
+		for a in $(ip "a" | awk '$2 ~ /[^:]+:$/{print $2}' | sed 's/://g') ; do
+			echo "${a}"
+		done ;;
 	("--select"|"-s")
 		export PS3="select an option:> "
-		select i in $(ip "a" | awk '$2 ~ /[^:]+:$/{print $2}') "exit" ; do
+		select i in $(ip "a" | awk '$2 ~ /[^:]+:$/{print $2}' | sed 's/://g') "exit" ; do
 			case "${i}" in
 				("exit")
-					exit 0
-				;;
+					exit 0 ;;
 				(*)
 					if [[ -n "${i}" ]] ; then
-						echo "${i} - ${REPLY}"
-					fi
-				;;
+						selected="$i"
+						echo "Selected interface is $selected"
+						read -p "Enter ip address (xx.xx.xx.xx/xx)" ip
+						ip address $ip dev $selected
+						read -p "Please enter your gateway address (xx.xx.xx.xx/xx)" route
+						ip route add default via $route dev $selected
+						echo "It's all done"
+					fi ;;
 			esac
-		done
-	;;
+		done ;;
 	("--set"|"-set")
-
-	;;
+		read -p "Enter ip address (xx.xx.xx.xx/xx)" ip
+		ip address $ip dev $INTERFACE
+		read -p "Please enter your gateway address (xx.xx.xx.xx/xx)" route
+		ip route add default via $route dev $INTERFACE
+		echo "It's all done" ;;
 	(*)
 		echo -e "There is no parameter found! You can use;
 \t--interfaces, -i: list network interfaces of the device
 "
-		exit 1
-	;;
+		exit 1 ;;
 esac
