@@ -34,10 +34,6 @@ case "${1,,}" in
 		ip "a" | awk '$2 ~ /[^:]+:$/{print $2}'| sed 's/://g' ;;
 	("--interface"|"-i")
 		echo "${INTERFACE}" ;;
-	("--autoselect"|"-a")
-		for a in $(ip "a" | awk '$2 ~ /[^:]+:$/{print $2}' | sed 's/://g') ; do
-			echo "${a}"
-		done ;;
 	("--select"|"-s")
 		export PS3="select an option:> "
 		select i in $(ip "a" | awk '$2 ~ /[^:]+:$/{print $2}' | sed 's/://g') "exit" ; do
