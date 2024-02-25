@@ -46,8 +46,6 @@ case "${1,,}" in
 						echo "Selected interface is $selected"
 						read -p "Enter ip address (xx.xx.xx.xx/xx)" ip
 						ip addr add $ip dev $selected
-						read -p "Please enter your gateway address (xx.xx.xx.xx/xx)" route
-						ip route add default via $route dev $selected
 						echo "It's all done"
 					fi ;;
 			esac
@@ -55,8 +53,6 @@ case "${1,,}" in
 	("--set"|"-set")
 		read -p "Enter ip address (xx.xx.xx.xx/xx)" ip
 		ip addr add $ip dev $INTERFACE
-		read -p "Please enter your gateway address (xx.xx.xx.xx/xx)" route
-		ip route add default via $route dev $INTERFACE
 		echo "It's all done" ;;
 	(*)
 		echo -e "There is no parameter found! You can use;
