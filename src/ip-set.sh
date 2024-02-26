@@ -35,7 +35,7 @@ case "${1,,}" in
 	("--interface"|"-i")
 		echo "${INTERFACE}" ;;
 	("--select"|"-s")
-		export PS3="select an option:> "
+		export PS3="select interface:> "
 		select i in $(ip "a" | awk '$2 ~ /[^:]+:$/{print $2}' | sed 's/://g') "exit" ; do
 			case "${i}" in
 				("exit")
@@ -46,14 +46,20 @@ case "${1,,}" in
 						echo "Selected interface is $selected"
 						read -p "Enter ip address (xx.xx.xx.xx/xx)" ip
 						ip addr add $ip dev $selected
+						read -p "Enter gateway address (xx.xx.xx.1)" gateway
+						ip route add default via $gateway dev $selected
 						echo "It's all done"
+						exit
 					fi ;;
 			esac
 		done ;;
 	("--set"|"-set")
 		read -p "Enter ip address (xx.xx.xx.xx/xx)" ip
 		ip addr add $ip dev $INTERFACE
-		echo "It's all done" ;;
+		read -p "Enter gateway address (xx.xx.xx.1)" gateway
+		ip route add default via $gateway dev $INTERFACE
+		echo "It's all done" 
+		exit ;;
 	(*)
 		echo -e "There is no parameter found! You can use;
 \t--interfaces, -i: list network interfaces of the device
